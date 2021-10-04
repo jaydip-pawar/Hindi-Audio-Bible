@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1035643386565",
+    "project_id": "hindi-audio-bible",
+    "storage_bucket": "hindi-audio-bible.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035643386565:android:53e5ea375d9d37fa3d4eac",
+        "android_client_info": {
+          "package_name": "com.hindiaudio.bible"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035643386565-b1543h1dpv04ih445ec0de8qlf1760dl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvW8kpNduoR_WPdR7QZVElJCsIKS61uno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035643386565-b1543h1dpv04ih445ec0de8qlf1760dl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
