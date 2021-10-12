@@ -92,7 +92,7 @@ class SideDrawer extends StatelessWidget {
             leading: Icon(Icons.home, size: 23, color: Colors.black54,),
             title: Text("Home", style: TextStyle(fontSize: 18),),
             onTap: () {
-              Navigator.pushReplacementNamed(context, HomeScreen.id);
+              Navigator.popUntil(context, ModalRoute.withName(HomeScreen.id));
             },
           ),
           ListTile(
@@ -107,6 +107,7 @@ class SideDrawer extends StatelessWidget {
             leading: Icon(Icons.people_alt, size: 23, color: Colors.black54,),
             title: Text("About Us", style: TextStyle(fontSize: 16),),
             onTap: () {
+              Navigator.pop(context);
               Navigator.pushNamed(context, AboutUs.id);
               },
           ),
@@ -114,6 +115,7 @@ class SideDrawer extends StatelessWidget {
             leading: Icon(Icons.security, size: 23, color: Colors.black54,),
             title: Text("Privacy Policy", style: TextStyle(fontSize: 16),),
             onTap: () {
+              Navigator.pop(context);
               Navigator.pushNamed(context, PrivacyPolicy.id);
               },
           ),
@@ -127,12 +129,18 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.share, size: 23, color: Colors.black54,),
             title: Text("Share App", style: TextStyle(fontSize: 16),),
-            onTap: () => share(),
+            onTap: () {
+              Navigator.pop(context);
+              share();
+              },
           ),
           ListTile(
             leading: Icon(Icons.quick_contacts_dialer, size: 23, color: Colors.black54,),
             title: Text("Contact Us", style: TextStyle(fontSize: 16),),
-            onTap: () => Navigator.pushNamed(context, ContactUsScreen.id),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, ContactUsScreen.id);
+              },
           ),
         ],
       ),

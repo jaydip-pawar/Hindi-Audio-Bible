@@ -125,6 +125,9 @@ class _BookScreenState extends State<BookScreen> {
                               itemCount: snapshot.data!.size,
                               shrinkWrap: true,
                               itemBuilder: (BuildContext context, int index) => ChapterCard(
+                                index: index,
+                                state: widget.state,
+                                longDescription: snapshot.data!.docs[index].get("LongDescription"),
                                 imageRequired: true,
                                 size: 15,
                                 name: snapshot.data!.docs[index].get("Name"),
@@ -150,14 +153,11 @@ class _BookScreenState extends State<BookScreen> {
                           return CircularProgressIndicator();
                         },
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 50),
                     ],
                   ),
                 ),
               ],
-            ),
-            SizedBox(
-              height: 20,
             ),
           ],
         ),

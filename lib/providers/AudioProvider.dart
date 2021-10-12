@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AudioProvider extends ChangeNotifier{
@@ -7,12 +8,26 @@ class AudioProvider extends ChangeNotifier{
   Duration position = Duration(hours: 0, minutes: 0, seconds: 0);
   String audioState = "";
   String song_url = "";
+  String songName = "";
   bool isPlaying = false;
   bool isPaused = false;
+  bool isRepeat = false;
+  bool isShuffle = false;
   int playingIndex = -1;
+  late AsyncSnapshot<QuerySnapshot<Object?>> snapshot;
 
   AudioProvider(){
     initAudio();
+  }
+
+  setShuffle() {
+    this.isShuffle = !this.isShuffle;
+    notifyListeners();
+  }
+
+  setRepeat() {
+    this.isRepeat = !this.isRepeat;
+    notifyListeners();
   }
 
   setUrl(String url) {
@@ -40,11 +55,36 @@ class AudioProvider extends ChangeNotifier{
     });
 
     audioPlayer.onPlayerCompletion.listen((event) {
-      audioState = "Stopped";
-      playingIndex = 0;
-      stopAudio();
-      seekAudio(Duration(milliseconds: 0));
-      notifyListeners();
+      if(isRepeat) {
+        stopAudio();
+        playAudio();
+        notifyListeners();
+      } else if(isShuffle) {
+        if (snapshot.data!.size != playingIndex + 1) {
+          stopAudio();
+          isPlaying = true;
+          playingIndex = playingIndex + 1;
+          isPaused = false;
+          songName = snapshot.data!.docs[playingIndex].get("Name");
+          setUrl(snapshot.data!.docs[playingIndex].get("SongLink"));
+          playAudio();
+          notifyListeners();
+        } else {
+          audioState = "Stopped";
+          playingIndex = -1;
+          isPlaying = false;
+          stopAudio();
+          seekAudio(Duration(milliseconds: 0));
+          notifyListeners();
+        }
+      } else {
+        audioState = "Stopped";
+        playingIndex = -1;
+        isPlaying = false;
+        stopAudio();
+        seekAudio(Duration(milliseconds: 0));
+        notifyListeners();
+      }
     });
 
     audioPlayer.onPlayerStateChanged.listen((playerState) {
@@ -69,6 +109,11 @@ class AudioProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  setPause(bool isPaused) {
+    this.isPaused = isPaused;
+    notifyListeners();
+  }
+
   pauseAudio(){
     audioPlayer.pause();
     notifyListeners();
@@ -81,6 +126,12 @@ class AudioProvider extends ChangeNotifier{
 
   seekAudio(Duration durationToSeek){
     audioPlayer.seek(durationToSeek);
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
   }
 
 }
