@@ -1,21 +1,19 @@
 import 'package:bible/constants.dart';
 import 'package:bible/providers/AudioProvider.dart';
-import 'package:bible/providers/BookProvider.dart';
 import 'package:bible/screens/Splash_Screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   MobileAds.instance.initialize();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => BookProvider(),
-        ),
         ChangeNotifierProvider(
           create: (_) => AudioProvider(),
         ),
@@ -32,13 +30,22 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  void initializeFlutterFire() async {
-    await Firebase.initializeApp();
-  }
+  late FirebaseMessaging messaging;
 
   @override
   void initState() {
-    initializeFlutterFire();
+    messaging = FirebaseMessaging.instance;
+    messaging.getToken().then((value){
+      print(value);
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message received");
+      print(event.notification!.body);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+    });
+    messaging.subscribeToTopic("banner");
     super.initState();
   }
 

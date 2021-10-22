@@ -1,5 +1,4 @@
 import 'package:bible/constants.dart';
-import 'package:bible/providers/BookProvider.dart';
 import 'package:bible/screens/Chapter_Screen.dart';
 import 'package:bible/widgets/Book_Info.dart';
 import 'package:bible/widgets/Chapter_Card.dart';
@@ -7,7 +6,6 @@ import 'package:bible/widgets/Side_Drawer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:provider/provider.dart';
 
 class BookScreen extends StatefulWidget {
   const BookScreen({
@@ -22,8 +20,6 @@ class BookScreen extends StatefulWidget {
 }
 
 class _BookScreenState extends State<BookScreen> {
-
-  String lDiscription = "36 Books";
 
   late BannerAd myBanner;
   bool isBannerLoaded = false;
@@ -51,8 +47,6 @@ class _BookScreenState extends State<BookScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    final bookProvider = Provider.of<BookProvider>(context);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -93,21 +87,36 @@ class _BookScreenState extends State<BookScreen> {
                         bottomRight: Radius.circular(50),
                       ),
                     ),
-                    child: BookInfo(
-                      size: size(context),
-                      name: "Bible",
-                      description: "36 Books",
-                      maxLines: 10,
-                      enableButton: false,
-                      longDescription: widget.state == "Old" ? "The Old Testament is the first section of the Bible, covering the creation of Earth through Noah and the flood, Moses and more, finishing with the Jews being expelled to Babylon. The Bible's Old Testament is very similar to the Hebrew Bible, which has origins in the ancient religion of Judaism." : "This Page consist 36 books with new Testament",
-                    )),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('BookDetails')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+
+                        if (snapshot.hasData) {
+                          return BookInfo(
+                            size: size(context),
+                            name: "Bible",
+                            description: snapshot.data!.docs[widget.state == "New" ? 1 : 0].get("Description"),
+                            maxLines: 10,
+                            enableButton: false,
+                            longDescription: snapshot.data!.docs[widget.state == "New" ? 1 : 0].get("LongDescription"),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ),),
                 Padding(
                   padding: EdgeInsets.only(top: height(context) * .32),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       StreamBuilder<QuerySnapshot>(
-                        stream: bookProvider.bookStream,
+                        stream: FirebaseFirestore.instance
+                            .collection('${widget.state}Books')
+                            .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasError) {

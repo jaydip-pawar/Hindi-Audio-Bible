@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hindiaudio.bible">
    <application
-        android:label="bible"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Hindi Audio Bible"
+        android:icon="@mipmap/launcher_icon">
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

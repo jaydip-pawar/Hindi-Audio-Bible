@@ -123,11 +123,9 @@ class _ChapterScreenState extends State<ChapterScreen> {
 
   @override
   void initState() {
-    print('Book${widget.index + 1}');
-    print(widget.state);
     chapterStream = FirebaseFirestore.instance
-        .collection('Book${widget.index + 1}')
-        .doc(widget.state)
+        .collection(widget.state)
+        .doc('Book${widget.index + 1}')
         .collection("Chapters")
         .snapshots();
     super.initState();

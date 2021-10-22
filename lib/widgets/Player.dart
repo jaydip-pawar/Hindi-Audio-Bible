@@ -1,6 +1,7 @@
 import 'package:bible/providers/AudioProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class Player extends StatefulWidget {
@@ -12,6 +13,42 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   double currentSlider = 0;
+  late InterstitialAd _interstitialAd;
+
+  void _showInterstitialAd() {
+
+    _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+      },
+    );
+    _interstitialAd.show();
+  }
+
+  @override
+  void didChangeDependencies() {
+    InterstitialAd.load(
+        adUnitId: 'ca-app-pub-3940256099942544/1033173712',
+        request: AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            // Keep a reference to the ad so you can show it later.
+            this._interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ));
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +142,7 @@ class _PlayerState extends State<Player> {
                           : Colors.grey,
                       onPressed: () {
                         if (_audioProvider.playingIndex != 0) {
+                          _showInterstitialAd();
                           _audioProvider.stopAudio();
                           _audioProvider.isPlaying = true;
                           _audioProvider.playingIndex = _audioProvider.playingIndex - 1;
@@ -141,6 +179,7 @@ class _PlayerState extends State<Player> {
                       onPressed: () {
                         if (_audioProvider.snapshot.data!.size !=
                             _audioProvider.playingIndex + 1) {
+                          _showInterstitialAd();
                           _audioProvider.stopAudio();
                           _audioProvider.isPlaying = true;
                           _audioProvider.playingIndex = _audioProvider.playingIndex + 1;
