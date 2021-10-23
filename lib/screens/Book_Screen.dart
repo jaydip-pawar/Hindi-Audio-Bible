@@ -98,10 +98,10 @@ class _BookScreenState extends State<BookScreen> {
                           return BookInfo(
                             size: size(context),
                             name: "Bible",
-                            description: snapshot.data!.docs[widget.state == "New" ? 1 : 0].get("Description"),
+                            description: snapshot.data!.docs[widget.state == "New" ? 0 : 1].get("Description"),
                             maxLines: 10,
                             enableButton: false,
-                            longDescription: snapshot.data!.docs[widget.state == "New" ? 1 : 0].get("LongDescription"),
+                            longDescription: snapshot.data!.docs[widget.state == "New" ? 0 : 1].get("LongDescription"),
                           );
                         } else {
                           return Container();
@@ -116,6 +116,7 @@ class _BookScreenState extends State<BookScreen> {
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('${widget.state}Books')
+                            .orderBy('index', descending: false)
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {

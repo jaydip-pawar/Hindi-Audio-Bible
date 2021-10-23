@@ -79,7 +79,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
     super.didChangeDependencies();
   }
 
-  void _showInterstitialAd(AsyncSnapshot<QuerySnapshot<Object?>> snapshot, AudioProvider _audioProvider, int index) {
+  void _showInterstitialAd() {
 
     _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (InterstitialAd ad) =>
@@ -87,13 +87,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
-
-        _audioProvider.stopAudio();
-        _audioProvider.isPlaying = true;
-        _audioProvider.playingIndex = index;
-        _audioProvider.isPaused = false;
-        _audioProvider.setUrl(snapshot.data!.docs[index].get("SongLink"));
-        _audioProvider.playAudio();
 
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
@@ -117,7 +110,13 @@ class _ChapterScreenState extends State<ChapterScreen> {
       }
     } else {
       _audioProvider.songName = snapshot.data!.docs[index].get("Name");
-      _showInterstitialAd(snapshot, _audioProvider, index);
+      _audioProvider.stopAudio();
+      _audioProvider.isPlaying = true;
+      _audioProvider.playingIndex = index;
+      _audioProvider.isPaused = false;
+      _audioProvider.setUrl(snapshot.data!.docs[index].get("SongLink"));
+      _audioProvider.playAudio();
+      _showInterstitialAd();
     }
   }
 
@@ -127,6 +126,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
         .collection(widget.state)
         .doc('Book${widget.index + 1}')
         .collection("Chapters")
+        .orderBy('index', descending: false)
         .snapshots();
     super.initState();
   }

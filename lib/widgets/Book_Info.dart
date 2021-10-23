@@ -36,7 +36,7 @@ class BookInfo extends StatelessWidget {
                     child: Text(
                       name,
                       style: Theme.of(context).textTheme.headline4!.copyWith(
-                        fontSize: 28,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return CircularProgressIndicator();
                   },
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 60),
                 // RoundedButton(
                 //   text: "Old Testament",
                 //   press: () {
