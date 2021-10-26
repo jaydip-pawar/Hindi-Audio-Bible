@@ -3,13 +3,13 @@ import 'dart:typed_data';
 
 import 'package:bible/constants.dart';
 import 'package:bible/screens/Book_Screen.dart';
+import 'package:bible/widgets/Bottom_Ads.dart';
 import 'package:bible/widgets/Rounded_Button.dart';
 import 'package:bible/widgets/Side_Drawer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:modern_form_esys_flutter_share/modern_form_esys_flutter_share.dart';
 
@@ -22,42 +22,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late BannerAd myBanner;
-  bool isBannerLoaded = false;
   bool _isLoading = false;
-
-  @override
-  void didChangeDependencies() {
-    myBanner = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(onAdFailedToLoad: (ad, error) {
-        print("Error: $error");
-        ad.dispose();
-      }, onAdLoaded: (ad) {
-        setState(() {
-          isBannerLoaded = true;
-        });
-        print("Banner Loaded");
-      },
-      ),
-    );
-    myBanner.load();
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      bottomSheet: isBannerLoaded ? Container(
-        color: Colors.transparent,
-        height: myBanner.size.height.toDouble(),
-        child: AdWidget(
-          ad: myBanner,
-        ),
-      ) : SizedBox(),
+      bottomSheet: BottomAds(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

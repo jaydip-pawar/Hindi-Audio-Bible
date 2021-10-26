@@ -1,6 +1,7 @@
 import 'package:bible/constants.dart';
 import 'package:bible/providers/AudioProvider.dart';
 import 'package:bible/widgets/Book_Info.dart';
+import 'package:bible/widgets/Bottom_Ads.dart';
 import 'package:bible/widgets/Player.dart';
 import 'package:bible/widgets/Side_Drawer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,39 +31,10 @@ class ChapterScreen extends StatefulWidget {
 
 class _ChapterScreenState extends State<ChapterScreen> {
   late Stream<QuerySnapshot> chapterStream;
-  late BannerAd myBanner;
   late InterstitialAd _interstitialAd;
-  bool isBannerLoaded = false;
-
-  Future<bool> _onBackPressed() {
-    myBanner.dispose();
-    final _audioProvider = Provider.of<AudioProvider>(context, listen: false);
-    _audioProvider.isPlaying = false;
-    _audioProvider.playingIndex = -1;
-    _audioProvider.stopAudio();
-    Navigator.pop(context);
-    throw "";
-  }
 
   @override
   void didChangeDependencies() {
-    myBanner = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(onAdFailedToLoad: (ad, error) {
-        print("Error: $error");
-        ad.dispose();
-      }, onAdLoaded: (ad) {
-        setState(() {
-          isBannerLoaded = true;
-        });
-        print("Banner Loaded");
-      },
-      ),
-    );
-    myBanner.load();
-
     InterstitialAd.load(
         adUnitId: 'ca-app-pub-3940256099942544/1033173712',
         request: AdRequest(),
@@ -135,173 +107,150 @@ class _ChapterScreenState extends State<ChapterScreen> {
   Widget build(BuildContext context) {
     final _audioProvider = Provider.of<AudioProvider>(context);
 
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-        bottomSheet: !_audioProvider.isPlaying
-            ? isBannerLoaded
-            ? Container(
-          color: Colors.transparent,
-          height: myBanner.size.height.toDouble(),
-          child: AdWidget(
-            ad: myBanner,
-          ),
-        )
-            : SizedBox()
-            : SizedBox(),
-        drawer: SideDrawer(),
-        bottomNavigationBar: _audioProvider.isPlaying
-            ? Player()
-            : Container(
-                height: 0,
-                width: 0,
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      bottomSheet: BottomAds(),
+      drawer: SideDrawer(),
+      bottomNavigationBar: _audioProvider.isPlaying
+          ? Player()
+          : Container(
+              height: 0,
+              width: 0,
+            ),
+      body: Stack(
+        alignment: Alignment.topCenter,
+        children: <Widget>[
+          Container(
+              alignment: Alignment.topCenter,
+              padding: EdgeInsets.only(
+                  top: height(context) * .12,
+                  left: width(context) * .1,
+                  right: width(context) * .02),
+              height: height(context) * .48,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/bg.png"),
+                  fit: BoxFit.fitWidth,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(50),
+                  bottomRight: Radius.circular(50),
+                ),
               ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Stack(
-                alignment: Alignment.topCenter,
-                children: <Widget>[
-                  Container(
-                      alignment: Alignment.topCenter,
-                      padding: EdgeInsets.only(
-                          top: height(context) * .12,
-                          left: width(context) * .1,
-                          right: width(context) * .02),
-                      height: height(context) * .48,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/bg.png"),
-                          fit: BoxFit.fitWidth,
-                        ),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(50),
-                          bottomRight: Radius.circular(50),
-                        ),
-                      ),
-                      child: BookInfo(
-                        size: size(context),
-                        name: widget.name,
-                        maxLines: 5,
-                        enableButton: true,
-                        description: widget.description,
-                        longDescription: widget.longDescription,
-                      )),
-                  Padding(
-                    padding: EdgeInsets.only(top: height(context) * .32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        StreamBuilder<QuerySnapshot>(
-                          stream: chapterStream,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (snapshot.hasError) {
-                              return Text("Error found");
-                            }
+              child: BookInfo(
+                size: size(context),
+                name: widget.name,
+                maxLines: 5,
+                enableButton: true,
+                description: widget.description,
+                longDescription: widget.longDescription,
+              )),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: chapterStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("Error found");
+                  }
 
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
 
-                            if (snapshot.hasData) {
-                              return ListView.builder(
-                                physics: BouncingScrollPhysics(),
-                                itemCount: snapshot.data!.size,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int index) =>
-                                    GestureDetector(
-                                      onTap: () {
+                  if (snapshot.hasData) {
+                    return MediaQuery.removePadding(
+                      context: context,
+                      removeTop: true,
+                      child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: snapshot.data!.size,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) =>
+                            GestureDetector(
+                              onTap: () {
+                                playAudio(index, snapshot);
+                              },
+                              child: Container(
+                                height: 70,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
+                                margin: EdgeInsets.only(
+                                    bottom: 16, left: 20, right: 20),
+                                width: width(context) - 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(38.5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0, 10),
+                                      blurRadius: 33,
+                                      color: Color(0xFFD3D3D3).withOpacity(.84),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                              "${snapshot.data!.docs[index].get("Name")} \n",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: kBlackColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: snapshot.data!.docs[index]
+                                                  .get("Description"),
+                                              style: TextStyle(
+                                                  color: kLightBlackColor),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    IconButton(
+                                      icon: Icon(
+                                        _audioProvider.playingIndex == index
+                                            ? _audioProvider.isPaused
+                                            ? Icons.play_circle_outline_sharp
+                                            : Icons.pause_circle_outline
+                                            : Icons.play_circle_outline_sharp,
+                                        size: 25,
+                                      ),
+                                      onPressed: () {
                                         playAudio(index, snapshot);
                                       },
-                                      child: Container(
-                                  height: 70,
-                                  padding: EdgeInsets.symmetric(
-                                        vertical: 0, horizontal: 20),
-                                  margin: EdgeInsets.only(
-                                        bottom: 16, left: 20, right: 20),
-                                  width: width(context) - 48,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(38.5),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: Offset(0, 10),
-                                          blurRadius: 33,
-                                          color: Color(0xFFD3D3D3).withOpacity(.84),
-                                        ),
-                                      ],
-                                  ),
-                                  child: Row(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 8.0),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text:
-                                                      "${snapshot.data!.docs[index].get("Name")} \n",
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: kBlackColor,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: snapshot.data!.docs[index]
-                                                      .get("Description"),
-                                                  style: TextStyle(
-                                                      color: kLightBlackColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        IconButton(
-                                          icon: Icon(
-                                            _audioProvider.playingIndex == index
-                                                ? _audioProvider.isPaused
-                                                    ? Icons.play_circle_outline_sharp
-                                                    : Icons.pause_circle_outline
-                                                : Icons.play_circle_outline_sharp,
-                                            size: 25,
-                                          ),
-                                          color: _audioProvider.playingIndex == index
-                                              ? Colors.black
-                                              : Colors.white,
-                                          onPressed: () {
-                                            playAudio(index, snapshot);
-                                          },
-                                        )
-                                      ],
-                                  ),
+                                    )
+                                  ],
                                 ),
-                                    ),
-                              );
-                            }
+                              ),
+                            ),
+                      ),
+                    );
+                  }
 
-                            return CircularProgressIndicator();
-                          },
-                        ),
-                        SizedBox(height: 50),
-                      ],
-                    ),
-                  ),
-                ],
+                  return CircularProgressIndicator();
+                },
               ),
-            ],
-          ),
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
