@@ -1,0 +1,11 @@
+TODO:
+1. Replace android:value="ca-app-pub-5707379497677398~7715068486" with admob app ID (Path: ..\bible\android\app\src\main\AndroidManifest.xml)
+2. Replace adUnitId: 'ca-app-pub-3940256099942544/6300978111' with banner ad ID (Path: ..\bible\lib\widgets\Bottom_Ads.dart)
+3. Replace adUnitId: 'ca-app-pub-3940256099942544/1033173712' inside didChangeDependencies() with InterstitialAd ID (Path: ..\bible\lib\screens\Chapter_Screen.dart)
+4. Replace storePassword and keyPassword values as you want (Path: ..\bible\android\key.properties)
+5. Perform this command in CMD and Make sure you CMD is in root folder of Project. (Command: keytool -genkey -v -keystore c:\Users\USER_NAME\upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload)
+6. Run this command to get KeyStore
+7. Enter the storePassword mention above when asked
+8. Enter the keyPassword mention above when asked
+9. After Completion It will generate a upload-keystore.jks file at location c:\Users\USER_NAME
+10. Copy and Replace that file with already existing File in Project. (Path: ..\bible\android\app\src)
