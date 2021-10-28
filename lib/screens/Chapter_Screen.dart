@@ -131,7 +131,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
                   top: height(context) * .12,
                   left: width(context) * .1,
                   right: width(context) * .02),
-              height: height(context) * .48,
+              height: height(context) * .40,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/bg.png"),
@@ -146,108 +146,108 @@ class _ChapterScreenState extends State<ChapterScreen> {
                 size: size(context),
                 name: widget.name,
                 maxLines: 5,
-                enableButton: true,
+                enableButton: false,
                 description: widget.description,
                 longDescription: widget.longDescription,
               )),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
-              child: StreamBuilder<QuerySnapshot>(
-                stream: chapterStream,
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text("Error found");
-                  }
+          Padding(
+            padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: chapterStream,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  print("Error found");
+                  return CircularProgressIndicator();
+                }
 
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
+                if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  print("waiting");
+                  return CircularProgressIndicator();
+                }
 
-                  if (snapshot.hasData) {
-                    return MediaQuery.removePadding(
-                      context: context,
-                      removeTop: true,
-                      child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: snapshot.data!.size,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) =>
-                            GestureDetector(
-                              onTap: () {
-                                playAudio(index, snapshot);
-                              },
-                              child: Container(
-                                height: 70,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 20),
-                                margin: EdgeInsets.only(
-                                    bottom: 16, left: 20, right: 20),
-                                width: width(context) - 48,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(38.5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, 10),
-                                      blurRadius: 33,
-                                      color: Color(0xFFD3D3D3).withOpacity(.84),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                              "${snapshot.data!.docs[index].get("Name")} \n",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: kBlackColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                if (snapshot.hasData) {
+                  return MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: snapshot.data!.size,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) =>
+                          GestureDetector(
+                            onTap: () {
+                              playAudio(index, snapshot);
+                            },
+                            child: Container(
+                              height: 70,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 20),
+                              margin: EdgeInsets.only(
+                                  bottom: 16, left: 20, right: 20),
+                              width: width(context) - 48,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(38.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0, 10),
+                                    blurRadius: 33,
+                                    color: Color(0xFFD3D3D3).withOpacity(.84),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                            "${snapshot.data!.docs[index].get("Name")} \n",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: kBlackColor,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            TextSpan(
-                                              text: snapshot.data!.docs[index]
-                                                  .get("Description"),
-                                              style: TextStyle(
-                                                  color: kLightBlackColor),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                          TextSpan(
+                                            text: snapshot.data!.docs[index]
+                                                .get("Description"),
+                                            style: TextStyle(
+                                                color: kLightBlackColor),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Spacer(),
-                                    IconButton(
-                                      icon: Icon(
-                                        _audioProvider.playingIndex == index
-                                            ? _audioProvider.isPaused
-                                            ? Icons.play_circle_outline_sharp
-                                            : Icons.pause_circle_outline
-                                            : Icons.play_circle_outline_sharp,
-                                        size: 25,
-                                      ),
-                                      onPressed: () {
-                                        playAudio(index, snapshot);
-                                      },
-                                    )
-                                  ],
-                                ),
+                                  ),
+                                  Spacer(),
+                                  IconButton(
+                                    icon: Icon(
+                                      _audioProvider.playingIndex == index
+                                          ? _audioProvider.isPaused
+                                          ? Icons.play_circle_outline_sharp
+                                          : Icons.pause_circle_outline
+                                          : Icons.play_circle_outline_sharp,
+                                      size: 25,
+                                    ),
+                                    onPressed: () {
+                                      playAudio(index, snapshot);
+                                    },
+                                  )
+                                ],
                               ),
                             ),
-                      ),
-                    );
-                  }
+                          ),
+                    ),
+                  );
+                }
 
-                  return CircularProgressIndicator();
-                },
-              ),
+                return CircularProgressIndicator();
+              },
             ),
           )
         ],

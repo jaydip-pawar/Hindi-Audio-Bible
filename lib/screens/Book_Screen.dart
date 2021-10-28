@@ -42,7 +42,7 @@ class _BookScreenState extends State<BookScreen> {
                   top: height(context) * .12,
                   left: width(context) * .1,
                   right: width(context) * .02),
-              height: height(context) * .48,
+              height: height(context) * .40,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/bg.png"),
@@ -78,63 +78,61 @@ class _BookScreenState extends State<BookScreen> {
                   return CircularProgressIndicator();
                 },
               ),),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('${widget.state}Books')
-                    .orderBy('index', descending: false)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text("Error found");
-                  }
+          Padding(
+            padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('${widget.state}Books')
+                  .orderBy('index', descending: false)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text("Error found");
+                }
 
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
-
-                  if (snapshot.hasData) {
-                    return MediaQuery.removePadding(
-                      context: context,
-                      removeTop: true,
-                      child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: snapshot.data!.size,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) => ChapterCard(
-                          index: index,
-                          state: widget.state,
-                          longDescription: snapshot.data!.docs[index].get("LongDescription"),
-                          imageRequired: true,
-                          size: 15,
-                          name: snapshot.data!.docs[index].get("Name"),
-                          description: snapshot.data!.docs[index].get("Description"),
-                          icon: Icons.arrow_forward_ios,
-                          press: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChapterScreen(
-                                    name: snapshot.data!.docs[index].get("Name"),
-                                    index: index,
-                                    state: widget.state,
-                                    longDescription: snapshot.data!.docs[index].get("LongDescription"),
-                                    description: snapshot.data!.docs[index].get("Description"),),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  }
-
+                if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
                   return CircularProgressIndicator();
-                },
-              ),
+                }
+
+                if (snapshot.hasData) {
+                  return MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: snapshot.data!.size,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) => ChapterCard(
+                        index: index,
+                        state: widget.state,
+                        longDescription: snapshot.data!.docs[index].get("LongDescription"),
+                        imageRequired: true,
+                        size: 15,
+                        name: snapshot.data!.docs[index].get("Name"),
+                        description: snapshot.data!.docs[index].get("Description"),
+                        icon: Icons.arrow_forward_ios,
+                        press: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChapterScreen(
+                                  name: snapshot.data!.docs[index].get("Name"),
+                                  index: index,
+                                  state: widget.state,
+                                  longDescription: snapshot.data!.docs[index].get("LongDescription"),
+                                  description: snapshot.data!.docs[index].get("Description"),),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                }
+
+                return CircularProgressIndicator();
+              },
             ),
           ),
         ],
