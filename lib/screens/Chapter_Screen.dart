@@ -114,14 +114,14 @@ class _ChapterScreenState extends State<ChapterScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      bottomSheet: BottomAds(),
-      drawer: SideDrawer(),
-      bottomNavigationBar: _audioProvider.isPlaying
+      bottomSheet: _audioProvider.isPlaying
           ? Player()
           : Container(
-              height: 0,
-              width: 0,
-            ),
+        height: 0,
+        width: 0,
+      ),
+      drawer: SideDrawer(),
+      bottomNavigationBar: BottomAds(),
       body: Stack(
         alignment: Alignment.topCenter,
         children: <Widget>[
@@ -131,7 +131,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
                   top: height(context) * .12,
                   left: width(context) * .1,
                   right: width(context) * .02),
-              height: height(context) * .40,
+              height: height(context) * .35,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/bg.png"),
@@ -151,7 +151,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
                 longDescription: widget.longDescription,
               )),
           Padding(
-            padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
+            padding: EdgeInsets.only(top: height(context) * .35, bottom: 40),
             child: StreamBuilder<QuerySnapshot>(
               stream: chapterStream,
               builder: (BuildContext context,

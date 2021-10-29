@@ -76,7 +76,7 @@ class SideDrawer extends StatelessWidget {
                     Container(
                       height: 20,
                       child: Text(
-                        "www.seedministry.com",
+                        "seedministries1@gmail.com",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 13,

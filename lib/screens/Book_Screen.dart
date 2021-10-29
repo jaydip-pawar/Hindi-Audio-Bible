@@ -42,7 +42,7 @@ class _BookScreenState extends State<BookScreen> {
                   top: height(context) * .12,
                   left: width(context) * .1,
                   right: width(context) * .02),
-              height: height(context) * .40,
+              height: height(context) * .35,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/bg.png"),
@@ -68,7 +68,7 @@ class _BookScreenState extends State<BookScreen> {
                   if (snapshot.hasData) {
                     return BookInfo(
                       size: size(context),
-                      name: "Bible",
+                      name: widget.state == "New" ? "नया नियम" : "पुराणा नियम",
                       description: snapshot.data!.docs[widget.state == "New" ? 0 : 1].get("Description"),
                       maxLines: 10,
                       enableButton: false,
@@ -79,7 +79,7 @@ class _BookScreenState extends State<BookScreen> {
                 },
               ),),
           Padding(
-            padding: EdgeInsets.only(top: height(context) * .43, bottom: 40),
+            padding: EdgeInsets.only(top: height(context) * .35, bottom: 40),
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('${widget.state}Books')

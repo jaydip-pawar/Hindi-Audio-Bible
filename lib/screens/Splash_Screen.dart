@@ -29,26 +29,33 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Container(
-            decoration: BoxDecoration(color: Colors.white),
-          ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                flex: 2,
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: height(context) * 0.3,
-                        width: width(context) * 0.3,
-                        child: Image.asset('assets/images/logo.png'),
-                      ),
-                    ],
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: height(context) * .25),
+                  Container(
+                    width: width(context) * 0.3,
+                    child: Image.asset('assets/images/logo.png'),
                   ),
-                ),
+                  SizedBox(height: height(context) * .25),
+                  Text(
+                    "Seed Developers",
+                    style: Theme.of(context).textTheme.headline4!.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "Copyright © 2021 Seed Ministries",
+                    style: Theme.of(context).textTheme.headline4!.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
               )
             ],
           ),

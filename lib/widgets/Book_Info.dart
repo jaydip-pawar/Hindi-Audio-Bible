@@ -92,17 +92,16 @@ class BookInfo extends StatelessWidget {
                 ],
               )
           ),
-          Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.transparent,
-                child: Image(
-                  image: AssetImage("assets/images/book1.png"),
-                  height: double.infinity,
-                  alignment: Alignment.topRight,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),),
+          Container(
+            height: height(context) *.18,
+            color: Colors.transparent,
+            child: Image(
+              image: AssetImage("assets/images/book1.png"),
+              height: double.infinity,
+              alignment: Alignment.topRight,
+              fit: BoxFit.fitWidth,
+            ),
+          ),
         ],
       ),
     );

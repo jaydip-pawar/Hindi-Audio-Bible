@@ -31,6 +31,15 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomSheet: BottomAds(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text(
+          "पवित्र बाइबिल",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold
+          ),
+        ),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
@@ -48,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(height: 20),
                 StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('Banner')
@@ -59,9 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Container();
                     }
 
-                    if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                                image: AssetImage(
+                                  "assets/images/background.png",
+                                ),
+                                fit: BoxFit.cover)),
+                      );
                     }
 
                     if (snapshot.hasData) {
@@ -70,31 +87,44 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           width: double.infinity,
                           height: height(context) * 0.3,
-                          decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                      snapshot.data!["address"],
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                          "assets/images/background.png",
+                                        ),
+                                        fit: BoxFit.cover)),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                          snapshot.data!["address"],
+                                        ),
+                                        fit: BoxFit.cover)),
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: IconButton(
+                                    icon: Icon(Icons.share_outlined,
+                                        color: Colors.white),
+                                    onPressed: () async {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      await name(snapshot).then((value) {
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
+                                      });
+                                    },
                                   ),
-                                  fit: BoxFit.cover
+                                ),
                               )
-                          ),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: IconButton(
-                              icon: Icon(Icons.share_outlined, color: Colors.white),
-                              onPressed: () async {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                await name(snapshot).then((value) {
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
-                                });
-                              },
-                            ),
+                            ],
                           ),
                         ),
                       );
@@ -103,9 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     return CircularProgressIndicator();
                   },
                 ),
-                SizedBox(height: 60),
+                SizedBox(height: 80),
                 // RoundedButton(
-                //   text: "Old Testament",
+                //   text: "पुराणा नियम",
                 //   press: () {
                 //     Navigator.push(
                 //         context,
@@ -114,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 //   },
                 // ),
                 RoundedButton(
-                  text: "New Testament",
+                  text: "नया नियम",
                   press: () {
                     Navigator.push(
                         context,
@@ -122,6 +152,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             builder: (_) => BookScreen(state: "New")));
                   },
                 ),
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text("Copyright © 2021 Seed Ministries"),
+                      SizedBox(height: 65),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -129,15 +169,20 @@ class _HomeScreenState extends State<HomeScreen> {
         isLoading: _isLoading,
         opacity: 0.5,
         color: Colors.black,
-        progressIndicator: CircularProgressIndicator(color: Colors.white,),
+        progressIndicator: CircularProgressIndicator(
+          color: Colors.white,
+        ),
       ),
     );
   }
 
   Future<void> name(AsyncSnapshot<DocumentSnapshot<Object?>> snapshot) async {
-    var request = await HttpClient().getUrl(Uri.parse(snapshot.data!["address"]));
+    var request =
+        await HttpClient().getUrl(Uri.parse(snapshot.data!["address"]));
     var response = await request.close();
     Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-    await Share.file('ESYS AMLOG', 'amlog.jpg', bytes, 'image/jpg', text: "Shared Via *Hindi Audio Bible App*:\nhttps://play.google.com/store/apps/details?id=com.hindiaudio.bible");
+    await Share.file('ESYS AMLOG', 'amlog.jpg', bytes, 'image/jpg',
+        text:
+            "Shared Via *Hindi Audio Bible App*:\nhttps://play.google.com/store/apps/details?id=com.hindiaudio.bible");
   }
 }
